@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Virtual env
+.venv/
+env/
+venv/
+
+# FastAPI / Backend
+.env
+*.env
+
+# Node / React
+node_modules/
+dist/
+build/
+*.log
+.env.local
+.env.*.local
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+
+# Git
+*.swp
+*.swo
