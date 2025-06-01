@@ -1,0 +1,68 @@
+# === GENERAL ===
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+
+# === PYTHON ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+.eggs/
+env/
+venv/
+ENV/
+VENV/
+.Python
+pip-log.txt
+
+# === VSCODE ===
+.vscode/
+
+# === ENVIRONMENT FILES ===
+.env
+.env.*
+
+# === MYPY / PYLINT / COVERAGE ===
+.mypy_cache/
+.pytest_cache/
+.coverage
+.coverage.*
+.cache
+.nosetests.xml
+coverage.xml
+*.cover
+htmlcov/
+
+# === DATABASE FILES ===
+*.sqlite3
+*.db
+
+# === FRONTEND (React - Node.js) ===
+node_modules/
+dist/
+build/
+.cache/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# === FRONTEND ENV ===
+frontend/.env
+frontend/.env.*
+
+# === OS-SPECIFIC FILES ===
+*.bak
+*.orig
+*.rej
+*.swo
+*.swn
+
+# === GIT ===
+.gitignore.txt

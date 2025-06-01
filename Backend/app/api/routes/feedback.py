@@ -4,13 +4,16 @@ from collections import defaultdict
 import openai
 import os
 from dotenv import load_dotenv
+from fastapi.responses import FileResponse
+from fpdf import FPDF
+import tempfile
+
 
 from app.api.deps import get_db, get_current_user
 from app.db.models.user import User
 from app.db.models.evaluation import Evaluation
 from app.db.models.question import Question
-from app.db.models.seller import Seller
-
+from app.db.models.feedback import Feedback
 router = APIRouter()
 
 # Cargar clave desde .env
@@ -60,4 +63,57 @@ Please analyze the seller's performance and suggest 3 practical improvement reco
     )
 
     feedback = response.choices[0].message.content
+    nuevo = Feedback(
+        seller_id=seller_id,
+        user_id=user.id,
+        content=feedback
+    )
+    db.add(nuevo)
+    db.commit()
+
     return {"seller_id": seller_id, "feedback": feedback}
+
+
+@router.get("/feedback/history/{seller_id}")
+def history_feedback(seller_id: int, db: Session = Depends(get_db)):
+    registers = db.query(Feedback).filter(Feedback.seller_id == seller_id).order_by(Feedback.date.desc()).all()
+    return [{"date": fb.date, "content": fb.content} for fb in registers]
+
+
+@router.get("/feedback/pdf/{seller_id}")
+def export_feedback_pdf(seller_id: int, db: Session = Depends(get_db)):
+    from app.db.models.feedback import Feedback
+    records = db.query(Feedback).filter(Feedback.seller_id == seller_id).order_by(Feedback.date.desc()).all()
+
+    if not records:
+        return {"detail": "No feedback available for export."}
+
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.cell(200, 10, txt=f"Feedback History - Seller {seller_id}", ln=True, align="C")
+    pdf.ln(10)
+
+    for fb in records:
+        date = fb.date.strftime("%Y-%m-%d %H:%M")
+        pdf.multi_cell(0, 10, f"{date}:\n{fb.content}\n\n")
+
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+    pdf.output(temp_file.name)
+
+    return FileResponse(temp_file.name, media_type="application/pdf", filename=f"feedback_seller_{seller_id}.pdf")
+
+@router.get("/feedback/history/{seller_id}")
+def feedback_history(seller_id: int, db: Session = Depends(get_db)):
+    from app.db.models.feedback import Feedback
+    registers = db.query(Feedback).filter(Feedback.seller_id == seller_id).order_by(Feedback.date.desc()).all()
+
+    if not registers:
+        return {"detail": "No feedback found for this seller."}
+
+    return [
+        {
+            "date": fb.date.strftime("%Y-%m-%d %H:%M"),
+            "content": fb.content
+        } for fb in registers
+    ]

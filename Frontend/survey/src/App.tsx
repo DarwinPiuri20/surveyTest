@@ -1,6 +1,6 @@
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-
+import SellerDetailWrapper from './pages/SellerDetailWrapper';
 import LoginPage from './pages/LoginPage';
 import AdminLayout from './layout/AdminLayout';
 import ValidatorLayout from './layout/ValidatorLayout';
@@ -15,6 +15,7 @@ const App = () => (
     <AuthProvider>
         <BrowserRouter>
             <Routes>
+                <Route path="/seller/:id" element={<PrivateRoute><SellerDetailWrapper /></PrivateRoute>} />
                 <Route path="/" element={<LoginPage />} />
 
                 {/* Admin Layout */}
